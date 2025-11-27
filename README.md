@@ -9,12 +9,20 @@ Note: “severity_type” is a feature extracted from the log files (in severity
 
 # How To Run
 - Download Requirements file 
-    pip install -r requirements.txt
-    If you are using Python 3 : python3 -m pip install -r requirements.txt
-- Run Fastapi server 
-    uvicorn main:app --reload
+```bash
+pip install -r requirements.txt
+```
+If you are using Python 3 
+```bash
+python3 -m pip install -r requirements.txt
+```
+- Run Fastapi server
+```bash
+uvicorn main:app --reload
+```
+  
 # Data Samples For Testing
-
+```json
 {
   "location": "location 91",
   "severity_type": "severity_type 2",
@@ -44,3 +52,4 @@ Note: “severity_type” is a feature extracted from the log files (in severity
   "event_type": "event_type 15",
   "model": "random_forest"
 }
+```

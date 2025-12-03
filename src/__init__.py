@@ -1,7 +1,3 @@
-"""
-Telstra Network Disruptions - Neural Network Classification Package
-"""
-
 from .data_preprocessing import DataPreprocessor
 from .model import NeuralNetworkModel
 from .evaluation import ModelEvaluator

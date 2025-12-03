@@ -1,19 +1,13 @@
-"""
-Save preprocessor for deployment
-"""
-
 import pickle
 import os
 from src.data_preprocessing import DataPreprocessor
 
 def save_preprocessor():
-    """Train and save preprocessor"""
     print("=" * 80)
     print("SAVING PREPROCESSOR FOR DEPLOYMENT")
     print("=" * 80)
     print()
     
-    # Configuration
     DATA_DIR = 'data/'
     TRAIN_PATH = os.path.join(DATA_DIR, 'train.csv')
     TEST_PATH = os.path.join(DATA_DIR, 'test.csv')
@@ -22,14 +16,11 @@ def save_preprocessor():
     RESOURCE_PATH = os.path.join(DATA_DIR, 'resource_type.csv')
     SEVERITY_PATH = os.path.join(DATA_DIR, 'severity_type.csv')
     
-    # Create outputs directory
     os.makedirs('outputs/models', exist_ok=True)
     
-    # Initialize preprocessor
     print("Initializing preprocessor...")
     preprocessor = DataPreprocessor()
     
-    # Load and process data
     print("Loading and processing data...")
     df = preprocessor.load_and_merge_data(
         TRAIN_PATH, TEST_PATH, EVENT_PATH, 
@@ -39,13 +30,11 @@ def save_preprocessor():
     df = preprocessor.clean_data(df)
     df = preprocessor.feature_engineering(df)
     
-    # Prepare data (this fits the encoders and scaler)
     print("Fitting preprocessor...")
     X_train, X_val, X_test, y_train, y_val, y_test = preprocessor.prepare_data(
         df, target_col='fault_severity', test_size=0.2, val_size=0.2
     )
     
-    # Save preprocessor
     print("\nSaving preprocessor...")
     preprocessor_path = 'outputs/models/preprocessor.pkl'
     with open(preprocessor_path, 'wb') as f:

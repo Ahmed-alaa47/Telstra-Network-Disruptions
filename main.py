@@ -1,8 +1,3 @@
-"""
-Main Script - Telstra Network Disruptions Neural Network Pipeline
-Complete workflow from data preprocessing to model evaluation
-"""
-
 import os
 import sys
 import numpy as np
@@ -18,46 +13,41 @@ print()
 try:
     print("Importing modules...")
     from src.data_preprocessing import DataPreprocessor
-    print("  ✓ DataPreprocessor imported")
+    print("   DataPreprocessor imported")
     
     from src.model import NeuralNetworkModel
-    print("  ✓ NeuralNetworkModel imported")
+    print("   NeuralNetworkModel imported")
     
     from src.evaluation import ModelEvaluator
-    print("  ✓ ModelEvaluator imported")
+    print("   ModelEvaluator imported")
     
     from src.hyperparameter_tuning import HyperparameterTuner
-    print("  ✓ HyperparameterTuner imported")
+    print("   HyperparameterTuner imported")
     
     from src.visualization import Visualizer
-    print("  ✓ Visualizer imported")
+    print("   Visualizer imported")
     
 except ImportError as e:
-    print(f"\n✗ Import Error: {e}")
+    print(f"\n Import Error: {e}")
     import traceback
     traceback.print_exc()
     input("\nPress Enter to exit...")
     sys.exit(1)
 
-# Set random seeds
 np.random.seed(42)
 import tensorflow as tf
 tf.random.set_seed(42)
 
-print("\n✓ All imports successful")
+print("\n All imports successful")
 print()
 
 
 def main():
-    """
-    Main execution function
-    """
     print("=" * 80)
     print("MAIN FUNCTION STARTED")
     print("=" * 80)
     print()
     
-    # ==================== CONFIGURATION ====================
     DATA_DIR = 'data/'
     TRAIN_PATH = os.path.join(DATA_DIR, 'train.csv')
     TEST_PATH = os.path.join(DATA_DIR, 'test.csv')
@@ -70,9 +60,9 @@ def main():
     for path in [TRAIN_PATH, TEST_PATH, EVENT_PATH, LOG_PATH, RESOURCE_PATH, SEVERITY_PATH]:
         if os.path.exists(path):
             size = os.path.getsize(path)
-            print(f"  ✓ {path} ({size:,} bytes)")
+            print(f"   {path} ({size:,} bytes)")
         else:
-            print(f"  ✗ {path} NOT FOUND")
+            print(f"   {path} NOT FOUND")
             input("\nPress Enter to exit...")
             return
     
@@ -162,7 +152,6 @@ def main():
     y_pred = model.predict(X_test)
     y_pred_proba = model.predict_proba(X_test)
     
-    # Show sample predictions
     print("\n[Step 5.2] Sample Predictions:")
     sample_size = min(10, len(X_test))
     for i in range(sample_size):
@@ -175,11 +164,9 @@ def main():
     print("\n[STEP 10] Creating visualizations...")
     visualizer = Visualizer()
     
-    # Plot training history
     print("  - Plotting training history...")
     visualizer.plot_training_history(history, save_path='training_history.png')
     
-    # Plot confusion matrix
     print("  - Plotting confusion matrix...")
     visualizer.plot_confusion_matrix(
         y_test, y_pred,
@@ -187,21 +174,18 @@ def main():
         save_path='confusion_matrix.png'
     )
     
-    # Plot class distribution
     print("  - Plotting class distribution...")
     visualizer.plot_class_distribution(
         y_train, y_val, y_test,
         save_path='class_distribution.png'
     )
     
-    # Plot prediction distribution
     print("  - Plotting prediction distribution...")
     visualizer.plot_prediction_distribution(
         y_test, y_pred,
         save_path='prediction_distribution.png'
     )
     
-    # Plot metrics comparison
     print("  - Plotting metrics comparison...")
     metrics_dict = {
         'Accuracy': evaluation_results['accuracy'],

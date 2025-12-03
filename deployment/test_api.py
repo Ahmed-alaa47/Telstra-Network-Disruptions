@@ -1,11 +1,6 @@
-"""
-Test the FastAPI deployment
-"""
-
 import requests
 import json
 
-# API base URL
 BASE_URL = "http://localhost:8000"
 
 def print_section(title):
@@ -63,7 +58,6 @@ def test_single_prediction():
     print(f"Status Code: {response.status_code}")
     print(f"Response:\n{json.dumps(response.json(), indent=2)}")
     
-    # Test data 2
     print("\n" + "-" * 80 + "\n")
     
     test_data_2 = {
@@ -87,10 +81,8 @@ def test_single_prediction():
     print(f"Response:\n{json.dumps(response.json(), indent=2)}")
 
 def test_batch_prediction():
-    """Test batch prediction"""
     print_section("Testing Batch Prediction")
     
-    # Batch test data
     batch_data = {
         "predictions": [
             {
@@ -139,7 +131,6 @@ def test_batch_prediction():
     print(f"Response:\n{json.dumps(response.json(), indent=2)}")
 
 def main():
-    """Run all tests"""
     print("\n" + "=" * 80)
     print("TELSTRA NETWORK DISRUPTIONS API - TEST SUITE")
     print("=" * 80)

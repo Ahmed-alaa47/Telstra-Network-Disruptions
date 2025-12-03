@@ -1,21 +1,14 @@
-"""
-Run the FastAPI server
-"""
-
 import os
 import sys
 
-def main():
-    """Run the API server"""
-    
+def main():    
     print("=" * 80)
     print("TELSTRA NETWORK DISRUPTIONS API SERVER")
     print("=" * 80)
     print()
     
-    # Check if model exists
     if not os.path.exists('outputs/models/telstra_nn_model.keras'):
-        print("✗ ERROR: Model not found!")
+        print(" ERROR: Model not found!")
         print()
         print("Please train the model first:")
         print("  python main.py")
@@ -23,9 +16,8 @@ def main():
         input("Press Enter to exit...")
         return
     
-    # Check if preprocessor exists
     if not os.path.exists('outputs/models/preprocessor.pkl'):
-        print("✗ ERROR: Preprocessor not found!")
+        print(" ERROR: Preprocessor not found!")
         print()
         print("Please save the preprocessor first:")
         print("  python save_preprocessor.py")
@@ -47,10 +39,8 @@ def main():
     print("=" * 80)
     print()
     
-    # Change to deployment directory and run
     try:
         import uvicorn
-        # Add deployment to path
         sys.path.insert(0, os.path.join(os.getcwd(), 'deployment'))
         uvicorn.run("deployment.api:app", host="0.0.0.0", port=8000, reload=True)
     except ImportError:

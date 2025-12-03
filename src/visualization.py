@@ -1,8 +1,3 @@
-"""
-Visualization Module
-Handles all plotting and visualization tasks
-"""
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -12,27 +7,12 @@ from sklearn.preprocessing import label_binarize
 
 
 class Visualizer:
-    """
-    Creates various visualizations for model analysis
-    """
-    
     def __init__(self, style='default'):
-        """Initialize visualizer with style"""
         plt.style.use(style)
         sns.set_palette("husl")
         self.fig_size = (12, 6)
         
     def plot_training_history(self, history, save_path=None):
-        """
-        Plot training and validation loss/accuracy curves
-        
-        Parameters:
-        -----------
-        history : keras.callbacks.History
-            Training history object
-        save_path : str, optional
-            Path to save figure
-        """
         print("\n" + "=" * 80)
         print("6. VISUALIZATION & REPORTING")
         print("=" * 80)
@@ -40,7 +20,6 @@ class Visualizer:
         
         fig, axes = plt.subplots(1, 2, figsize=(15, 5))
         
-        # Plot accuracy
         axes[0].plot(history.history['accuracy'], label='Training Accuracy', 
                     linewidth=2, marker='o', markersize=4)
         axes[0].plot(history.history['val_accuracy'], label='Validation Accuracy', 
@@ -51,7 +30,6 @@ class Visualizer:
         axes[0].legend(loc='lower right', fontsize=10)
         axes[0].grid(True, alpha=0.3)
         
-        # Plot loss
         axes[1].plot(history.history['loss'], label='Training Loss', 
                     linewidth=2, marker='o', markersize=4)
         axes[1].plot(history.history['val_loss'], label='Validation Loss', 
@@ -72,22 +50,6 @@ class Visualizer:
     
     def plot_confusion_matrix(self, y_true, y_pred, class_names=None, 
                              normalize=False, save_path=None):
-        """
-        Plot confusion matrix
-        
-        Parameters:
-        -----------
-        y_true : array-like
-            True labels
-        y_pred : array-like
-            Predicted labels
-        class_names : list, optional
-            Names of classes
-        normalize : bool
-            Whether to normalize the confusion matrix
-        save_path : str, optional
-            Path to save figure
-        """
         print("\n[Step 6.2] Plotting confusion matrix...")
         
         cm = confusion_matrix(y_true, y_pred)
@@ -118,25 +80,10 @@ class Visualizer:
         plt.show()
     
     def plot_class_distribution(self, y_train, y_val, y_test, save_path=None):
-        """
-        Plot class distribution across splits
-        
-        Parameters:
-        -----------
-        y_train : array-like
-            Training labels
-        y_val : array-like
-            Validation labels
-        y_test : array-like
-            Test labels
-        save_path : str, optional
-            Path to save figure
-        """
         print("\n[Step 6.3] Plotting class distribution...")
         
         fig, axes = plt.subplots(1, 3, figsize=(15, 5))
         
-        # Training set
         train_counts = pd.Series(y_train).value_counts().sort_index()
         axes[0].bar(train_counts.index, train_counts.values, 
                    color='skyblue', edgecolor='black', linewidth=1.5)
@@ -148,7 +95,6 @@ class Visualizer:
             axes[0].text(i, v + max(train_counts.values)*0.02, str(v), 
                         ha='center', va='bottom', fontweight='bold')
         
-        # Validation set
         val_counts = pd.Series(y_val).value_counts().sort_index()
         axes[1].bar(val_counts.index, val_counts.values, 
                    color='lightgreen', edgecolor='black', linewidth=1.5)
@@ -160,7 +106,6 @@ class Visualizer:
             axes[1].text(i, v + max(val_counts.values)*0.02, str(v), 
                         ha='center', va='bottom', fontweight='bold')
         
-        # Test set
         test_counts = pd.Series(y_test).value_counts().sort_index()
         axes[2].bar(test_counts.index, test_counts.values, 
                    color='salmon', edgecolor='black', linewidth=1.5)
@@ -181,24 +126,11 @@ class Visualizer:
         plt.show()
     
     def plot_prediction_distribution(self, y_true, y_pred, save_path=None):
-        """
-        Plot comparison of true vs predicted distributions
-        
-        Parameters:
-        -----------
-        y_true : array-like
-            True labels
-        y_pred : array-like
-            Predicted labels
-        save_path : str, optional
-            Path to save figure
-        """
         print("\n[Step 6.4] Plotting prediction distribution...")
         
         true_counts = pd.Series(y_true).value_counts().sort_index()
         pred_counts = pd.Series(y_pred).value_counts().sort_index()
         
-        # Ensure both have same indices
         all_classes = sorted(set(list(true_counts.index) + list(pred_counts.index)))
         true_counts = true_counts.reindex(all_classes, fill_value=0)
         pred_counts = pred_counts.reindex(all_classes, fill_value=0)
@@ -212,7 +144,6 @@ class Visualizer:
         bars2 = plt.bar(x + width/2, pred_counts.values, width, label='Predicted', 
                        color='orange', edgecolor='black', linewidth=1.5)
         
-        # Add value labels on bars
         for bars in [bars1, bars2]:
             for bar in bars:
                 height = bar.get_height()
@@ -235,26 +166,10 @@ class Visualizer:
         plt.show()
     
     def plot_roc_curves(self, y_true, y_pred_proba, num_classes=3, save_path=None):
-        """
-        Plot ROC curves for multi-class classification
-        
-        Parameters:
-        -----------
-        y_true : array-like
-            True labels
-        y_pred_proba : array-like
-            Prediction probabilities
-        num_classes : int
-            Number of classes
-        save_path : str, optional
-            Path to save figure
-        """
         print("\n[Step 6.5] Plotting ROC curves...")
         
-        # Binarize the labels
         y_true_bin = label_binarize(y_true, classes=range(num_classes))
         
-        # Compute ROC curve and ROC area for each class
         fpr = dict()
         tpr = dict()
         roc_auc = dict()
@@ -286,29 +201,13 @@ class Visualizer:
     
     def plot_hyperparameter_comparison(self, results_df, param_name, 
                                       metric='val_accuracy', save_path=None):
-        """
-        Plot comparison of hyperparameter effects
-        
-        Parameters:
-        -----------
-        results_df : pd.DataFrame
-            Results from hyperparameter tuning
-        param_name : str
-            Name of parameter to visualize
-        metric : str
-            Metric to plot ('val_accuracy', 'val_loss', etc.)
-        save_path : str, optional
-            Path to save figure
-        """
         print(f"\n[Step 6.6] Plotting {param_name} comparison...")
         
         if param_name not in results_df.columns:
             print(f"  - Parameter '{param_name}' not found in results")
             return
         
-        # Handle different types of parameters
         if results_df[param_name].dtype == 'object':
-            # For categorical parameters (e.g., optimizer, activation)
             grouped = results_df.groupby(param_name)[metric].agg(['mean', 'std']).reset_index()
             
             plt.figure(figsize=(10, 6))
@@ -324,7 +223,6 @@ class Visualizer:
             plt.tight_layout()
             
         else:
-            # For numerical parameters (e.g., learning_rate, dropout_rate)
             grouped = results_df.groupby(param_name)[metric].agg(['mean', 'std']).reset_index()
             
             plt.figure(figsize=(10, 6))
@@ -344,16 +242,6 @@ class Visualizer:
         plt.show()
     
     def plot_metrics_comparison(self, metrics_dict, save_path=None):
-        """
-        Plot comparison of different metrics
-        
-        Parameters:
-        -----------
-        metrics_dict : dict
-            Dictionary of metrics {'metric_name': value}
-        save_path : str, optional
-            Path to save figure
-        """
         print("\n[Step 6.7] Plotting metrics comparison...")
         
         metrics = list(metrics_dict.keys())
@@ -364,7 +252,6 @@ class Visualizer:
         bars = plt.bar(metrics, values, color=colors[:len(metrics)],
                       edgecolor='black', linewidth=1.5)
         
-        # Add value labels on bars
         for bar in bars:
             height = bar.get_height()
             plt.text(bar.get_x() + bar.get_width()/2., height,
@@ -385,20 +272,6 @@ class Visualizer:
         plt.show()
     
     def plot_learning_curves(self, train_sizes, train_scores, val_scores, save_path=None):
-        """
-        Plot learning curves to diagnose bias/variance
-        
-        Parameters:
-        -----------
-        train_sizes : array-like
-            Training set sizes
-        train_scores : array-like
-            Training scores
-        val_scores : array-like
-            Validation scores
-        save_path : str, optional
-            Path to save figure
-        """
         print("\n[Step 6.8] Plotting learning curves...")
         
         plt.figure(figsize=(10, 6))
@@ -421,23 +294,8 @@ class Visualizer:
         plt.show()
     
     def plot_feature_importance(self, feature_names, importances, top_n=20, save_path=None):
-        """
-        Plot feature importance
-        
-        Parameters:
-        -----------
-        feature_names : list
-            List of feature names
-        importances : array-like
-            Feature importance scores
-        top_n : int
-            Number of top features to display
-        save_path : str, optional
-            Path to save figure
-        """
         print(f"\n[Step 6.9] Plotting top {top_n} feature importances...")
         
-        # Sort features by importance
         indices = np.argsort(importances)[::-1][:top_n]
         top_features = [feature_names[i] for i in indices]
         top_importances = importances[indices]
@@ -460,18 +318,6 @@ class Visualizer:
         plt.show()
     
     def plot_prediction_errors(self, y_true, y_pred, save_path=None):
-        """
-        Plot prediction errors analysis
-        
-        Parameters:
-        -----------
-        y_true : array-like
-            True labels
-        y_pred : array-like
-            Predicted labels
-        save_path : str, optional
-            Path to save figure
-        """
         print("\n[Step 6.10] Plotting prediction errors...")
         
         errors = y_pred != y_true
@@ -479,7 +325,6 @@ class Visualizer:
         
         fig, axes = plt.subplots(1, 2, figsize=(15, 5))
         
-        # Error distribution by true class
         error_by_class = {}
         for cls in np.unique(y_true):
             cls_mask = y_true == cls
@@ -494,7 +339,6 @@ class Visualizer:
         axes[0].set_ylabel('Error Rate', fontsize=11)
         axes[0].grid(True, alpha=0.3, axis='y')
         
-        # Misclassification pattern
         misclass_matrix = confusion_matrix(y_true[errors], y_pred[errors])
         sns.heatmap(misclass_matrix, annot=True, fmt='d', cmap='Reds', 
                    ax=axes[1], cbar_kws={'label': 'Count'})
@@ -512,26 +356,6 @@ class Visualizer:
     
     def create_comprehensive_report(self, history, y_true, y_pred, y_pred_proba,
                                    metrics_dict, class_names=None, save_dir='./'):
-        """
-        Create a comprehensive visualization report
-        
-        Parameters:
-        -----------
-        history : keras.callbacks.History
-            Training history
-        y_true : array-like
-            True labels
-        y_pred : array-like
-            Predicted labels
-        y_pred_proba : array-like
-            Prediction probabilities
-        metrics_dict : dict
-            Dictionary of evaluation metrics
-        class_names : list, optional
-            Names of classes
-        save_dir : str
-            Directory to save all plots
-        """
         print("\n" + "=" * 80)
         print("CREATING COMPREHENSIVE VISUALIZATION REPORT")
         print("=" * 80)
@@ -539,7 +363,6 @@ class Visualizer:
         import os
         os.makedirs(save_dir, exist_ok=True)
         
-        # Plot all visualizations
         self.plot_training_history(history, 
                                    save_path=os.path.join(save_dir, 'training_history.png'))
         
@@ -558,4 +381,4 @@ class Visualizer:
         self.plot_prediction_errors(y_true, y_pred,
                                    save_path=os.path.join(save_dir, 'prediction_errors.png'))
         
-        print(f"\n✓ All visualizations saved to {save_dir}")
+        print(f"\n All visualizations saved to {save_dir}")

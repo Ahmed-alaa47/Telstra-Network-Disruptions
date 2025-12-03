@@ -11,19 +11,16 @@ from typing import List, Optional
 import pickle
 import os
 
-# Initialize FastAPI app
 app = FastAPI(
     title="Telstra Network Disruptions API",
     description="API for predicting network fault severity",
     version="1.0.0"
 )
 
-# Global variables for model and preprocessor
 model = None
 preprocessor = None
 
 class PredictionRequest(BaseModel):
-    """Request model for predictions"""
     location: str
     event_type: str
     log_feature: str
@@ -52,23 +49,19 @@ class PredictionRequest(BaseModel):
         }
 
 class PredictionResponse(BaseModel):
-    """Response model for predictions"""
     fault_severity: int
     confidence: float
     probabilities: dict
     fault_description: str
 
 class BatchPredictionRequest(BaseModel):
-    """Request model for batch predictions"""
     predictions: List[PredictionRequest]
 
 @app.on_event("startup")
 async def load_model_and_preprocessor():
-    """Load model and preprocessor on startup"""
     global model, preprocessor
     
     try:
-        # Load model
         model_path = 'outputs/models/telstra_nn_model.keras'
         if os.path.exists(model_path):
             model = tf.keras.models.load_model(model_path)
@@ -77,7 +70,6 @@ async def load_model_and_preprocessor():
             print(f"✗ Model file not found at {model_path}")
             print("  Please run 'python main.py' first to train the model")
             
-        # Load preprocessor
         preprocessor_path = 'outputs/models/preprocessor.pkl'
         if os.path.exists(preprocessor_path):
             with open(preprocessor_path, 'rb') as f:
@@ -159,31 +151,25 @@ def preprocess_input(data: PredictionRequest) -> np.ndarray:
         'severity_unique': 1
     }])
     
-    # Apply label encoding
     for col in ['location', 'event_type_mode', 'resource_type_mode', 'severity_type_mode']:
         if col in preprocessor.label_encoders:
             le = preprocessor.label_encoders[col]
-            # Handle unknown categories
             input_df[col] = input_df[col].apply(
                 lambda x: le.transform([x])[0] if x in le.classes_ else -1
             )
     
-    # Create engineered features
     input_df['event_log_ratio'] = input_df['event_count'] / (input_df['log_count'] + 1)
     input_df['severity_resource_ratio'] = input_df['severity_count'] / (input_df['resource_count'] + 1)
     input_df['total_features'] = input_df[['event_count', 'log_count', 'resource_count', 'severity_count']].sum(axis=1)
     input_df['total_unique'] = input_df[['event_unique', 'log_unique', 'resource_unique', 'severity_unique']].sum(axis=1)
     
-    # Ensure all required features are present
     expected_features = preprocessor.get_feature_names()
     for feature in expected_features:
         if feature not in input_df.columns:
             input_df[feature] = 0
     
-    # Select only expected features in correct order
     input_df = input_df[expected_features]
     
-    # Scale features
     X = preprocessor.scaler.transform(input_df)
     
     return X
@@ -195,15 +181,12 @@ async def predict(data: PredictionRequest):
         raise HTTPException(status_code=503, detail="Model not loaded")
     
     try:
-        # Preprocess input
         X = preprocess_input(data)
         
-        # Make prediction
         prediction_proba = model.predict(X, verbose=0)[0]
         prediction = int(np.argmax(prediction_proba))
         confidence = float(prediction_proba[prediction])
         
-        # Fault descriptions
         fault_descriptions = {
             0: "No Fault - Network operating normally",
             1: "Few Faults - Minor network issues detected",

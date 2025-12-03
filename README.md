@@ -1,6 +1,6 @@
 # Telstra Network Disruptions - Neural Network Classification
 
-Complete end-to-end machine learning pipeline for predicting network fault severity using Neural Networks.
+Complete end-to-end deep learning pipeline for predicting network fault severity using Neural Networks.
 
 ## 📁 Project Structure
 ```
@@ -33,7 +33,7 @@ telstra_network_disruptions/
 # Clone the repository
 git clone <repository-url>
 cd telstra_network_disruptions
-
+D:\python\pytorch\ragenv\Scripts\Activate.ps1
 # Install dependencies
 pip install -r requirements.txt
 ```
@@ -43,11 +43,6 @@ pip install -r requirements.txt
 **Option A: Use Real Data**
 - Download from [Kaggle](https://www.kaggle.com/competitions/telstra-recruiting-network/data)
 - Place files in `data/` folder
-
-**Option B: Generate Sample Data**
-```bash
-python scripts/create_sample_data.py
-```
 
 ### 3. Verify Setup
 ```bash

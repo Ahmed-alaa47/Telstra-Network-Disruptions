@@ -140,8 +140,75 @@ def main():
     evaluation_results = evaluator.evaluate(X_test, y_test)
     
     # ==================== 4. HYPERPARAMETER TUNING ====================
-    print("\n[STEP 9] Hyperparameter tuning (skipped by default)")
-    print("  - To enable, uncomment the tuning section in main.py")
+    print("\n[STEP 9] Hyperparameter tuning (optional)")
+    print("  - Set ENABLE_TUNING = True to run hyperparameter tuning")
+    print("  - Warning: This can take 1-3 hours!")
+    
+    ENABLE_TUNING = True  
+    
+    if ENABLE_TUNING:
+        print("\n" + "=" * 80)
+        print("4. HYPERPARAMETER TUNING")
+        print("=" * 80)
+        
+        param_grid = {
+            'layers_config': [[64, 32], [128, 64], [128, 64, 32]],
+            'activation': ['relu', 'tanh'],
+            'dropout_rate': [0.2, 0.3, 0.4],
+            'optimizer': ['adam', 'rmsprop'],
+            'learning_rate': [0.001, 0.0001]
+        }
+        
+        print("\n[Step 4.1] Initializing Hyperparameter Tuner...")
+        tuner = HyperparameterTuner(input_dim, num_classes)
+        
+        print("\n[Step 4.2] Running Grid Search...")
+        print(f"  - Testing {3 * 2 * 3 * 2 * 2} = 72 configurations")
+        print(f"  - This will take approximately 1-2 hours")
+        print()
+        
+        tuning_results = tuner.grid_search(
+            X_train, y_train, 
+            X_val, y_val,
+            param_grid, 
+            epochs=50,  
+            batch_size=32
+        )
+        
+        best_params = tuner.get_best_params()
+        
+        print("\n[Step 4.3] Best Hyperparameters Found:")
+        for key, value in best_params.items():
+            print(f"  - {key}: {value}")
+        
+        os.makedirs('outputs/reports', exist_ok=True)
+        tuner.save_results('outputs/reports/hyperparameter_tuning_results.csv')
+        
+        with open('outputs/reports/best_hyperparameters.txt', 'w') as f:
+            f.write("Best Hyperparameters from Grid Search\n")
+            f.write("=" * 50 + "\n\n")
+            for key, value in best_params.items():
+                f.write(f"{key}: {value}\n")
+        
+        print("\n[Step 4.4] Results saved to outputs/reports/")
+        
+        print("\n[Step 4.5] Analyzing hyperparameter effects...")
+        analysis = tuner.analyze_hyperparameters()
+        
+        print("\n" + "=" * 80)
+        print("HYPERPARAMETER TUNING COMPLETE!")
+        print("=" * 80)
+        print("\nYou can now:")
+        print("1. Check results: outputs/reports/hyperparameter_tuning_results.csv")
+        print("2. Use best parameters by updating LAYERS_CONFIG, ACTIVATION, etc. in main.py")
+        print("3. Retrain model with optimized hyperparameters")
+        print()
+        
+        input("Press Enter to continue to predictions...")
+    
+    else:
+        print("  - Hyperparameter tuning skipped (ENABLE_TUNING = False)")
+        print("  - Using default hyperparameters")
     
     # ==================== 5. PREDICTION ON UNSEEN DATA ====================
     print("\n" + "=" * 80)

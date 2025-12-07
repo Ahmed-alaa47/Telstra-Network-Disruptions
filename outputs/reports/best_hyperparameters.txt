@@ -1,0 +1,8 @@
+Best Hyperparameters from Grid Search
+==================================================
+
+layers_config: [128, 64, 32]
+activation: relu
+dropout_rate: 0.2
+optimizer: rmsprop
+learning_rate: 0.001
